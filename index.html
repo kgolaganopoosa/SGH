@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shakung Gaming Hub | Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Rajdhani', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1e1b4b, #020617);
+        }
+
+        .gaming-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid #c026d3; /* Purple theme */
+            box-shadow: 0 0 20px rgba(192, 38, 211, 0.1);
+        }
+
+        .neon-text {
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px #c026d3;
+        }
+
+        .input-field {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+        }
+
+        .input-field:focus {
+            border-color: #c026d3;
+            outline: none;
+            box-shadow: 0 0 10px rgba(192, 38, 211, 0.3);
+        }
+
+        .btn-save { background: #1e293b; border: 1px solid #c026d3; }
+        .btn-save:hover { background: #c026d3; color: white; }
+        
+        .btn-report { background: #c026d3; color: white; }
+        .btn-report:hover { background: #d946ef; box-shadow: 0 0 15px #c026d3; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-10">
+
+    <div class="max-w-6xl mx-auto">
+      <center>
+        <header class="mb-10 flex flex-col md:flex-row justify-between items-end gap-4 border-b border-purple-900/50 pb-6">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-black neon-text text-purple-500 tracking-tighter">SHAKUNG HUB</h1>
+                <p class="text-slate-400 text-xs uppercase tracking-widest mt-1">Operator Terminal // Auth_Level: Admin</p>
+            </div>
+            <button onclick="clearData()" class="text-[10px] border border-red-500/50 text-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition-all">CLEAR ALL RECORDS</button>
+        </header>
+    </center>
+        <div class="grid lg:grid-cols-12 gap-8">
+            <section class="lg:col-span-4 gaming-card p-6 rounded-xl">
+                <form id="gameForm" class="space-y-5">
+                    <div>
+                        <label class="block text-[10px] uppercase text-purple-400 font-bold mb-1">Gamer Name</label>
+                        <input type="text" id="gamerName" required class="w-full p-2 rounded input-field font-bold">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[10px] uppercase text-purple-400 font-bold mb-1">Unit Selection</label>
+                        <select id="machine" class="w-full p-2 rounded input-field">
+                            <option value="PS4-01">PS4 Station 01</option>
+                            <option value="PS4-02">PS4 Station 02</option>
+                            <option value="PS4-03">PS4 Station 03</option>
+                            <option value="Arcade-01">Arcade Classic</option>
+                            <option value="Arcade-02">Arcade Deluxe</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] uppercase text-purple-400 font-bold mb-1">Cash In</label>
+                            <input type="number" id="cash" required class="w-full p-2 rounded input-field" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase text-purple-400 font-bold mb-1">Change Given?</label>
+                            <div class="flex gap-2">
+                                <label class="flex-1">
+                                    <input type="radio" name="changeStatus" value="Yes" checked class="hidden peer">
+                                    <div class="text-center py-2 border border-slate-700 rounded cursor-pointer peer-checked:bg-purple-600 peer-checked:border-purple-600 text-xs font-bold transition-all">YES</div>
+                                </label>
+                                <label class="flex-1">
+                                    <input type="radio" name="changeStatus" value="No" class="hidden peer">
+                                    <div class="text-center py-2 border border-slate-700 rounded cursor-pointer peer-checked:bg-purple-600 peer-checked:border-purple-600 text-xs font-bold transition-all">NO</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase text-purple-400 font-bold mb-1">Match Results</label>
+                        <textarea id="results" rows="2" class="w-full p-2 rounded input-field resize-none text-sm"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 pt-4">
+                        <button type="button" onclick="saveOnly()" class="btn-save py-3 rounded font-bold text-sm tracking-widest transition-all uppercase">
+                            1. Save to History
+                        </button>
+                        <button type="button" onclick="generateFromForm()" class="btn-report py-3 rounded font-bold text-sm tracking-widest transition-all uppercase">
+                            2. Generate PDF Report
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="lg:col-span-8 gaming-card p-6 rounded-xl overflow-hidden flex flex-col">
+                <h2 class="text-sm font-bold text-slate-400 uppercase tracking-[0.3em] mb-4 flex justify-between">
+                    Live Session Log
+                    <span id="logCount" class="text-purple-500">0 Entries</span>
+                </h2>
+                
+                <div id="displayArea" class="space-y-3 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
+                    </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        const displayArea = document.getElementById('displayArea');
+
+        document.addEventListener('DOMContentLoaded', renderData);
+
+        // Action 1: Just save to LocalStorage
+        function saveOnly() {
+            const data = getFormData();
+            if(!data.name || !data.cash) return alert("Please fill in Name and Cash.");
+            
+            let logs = JSON.parse(localStorage.getItem('shakungLogs')) || [];
+            logs.push(data);
+            localStorage.setItem('shakungLogs', JSON.stringify(logs));
+            
+            renderData();
+            document.getElementById('gameForm').reset();
+        }
+
+        // Action 2: Save AND Download Report
+        function generateFromForm() {
+            const data = getFormData();
+            if(!data.name || !data.cash) return alert("Please fill in Name and Cash.");
+            
+            // Save it first
+            saveOnly();
+            // Generate PDF
+            downloadPDF(data);
+        }
+
+        function getFormData() {
+            return {
+                id: Date.now(),
+                name: document.getElementById('gamerName').value,
+                machine: document.getElementById('machine').value,
+                cash: document.getElementById('cash').value,
+                changeStatus: document.querySelector('input[name="changeStatus"]:checked').value,
+                results: document.getElementById('results').value || "N/A",
+                timestamp: new Date().toLocaleString()
+            };
+        }
+
+        function renderData() {
+            let logs = JSON.parse(localStorage.getItem('shakungLogs')) || [];
+            document.getElementById('logCount').innerText = `${logs.length} Entries`;
+            
+            if (logs.length === 0) {
+                displayArea.innerHTML = `<div class="text-center py-20 text-slate-600 uppercase text-xs tracking-widest border border-dashed border-slate-800 rounded">Waiting for data...</div>`;
+                return;
+            }
+
+            displayArea.innerHTML = logs.map((log, index) => `
+                <div class="bg-slate-900/80 p-4 border-l-4 border-purple-600 rounded flex justify-between items-center group">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-white font-bold tracking-tight">${log.name}</span>
+                            <span class="text-[10px] text-purple-400 bg-purple-900/30 px-2 py-0.5 rounded font-mono">${log.machine}</span>
+                        </div>
+                        <div class="text-xs text-slate-400 mt-1">
+                            $${log.cash} In • Change: ${log.changeStatus} • <span class="italic">"${log.results}"</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="text-[9px] text-slate-600 font-mono">${log.timestamp}</span>
+                        <button onclick='downloadPDF(${JSON.stringify(log)})' class="text-[10px] text-purple-400 hover:text-white border border-purple-900 px-2 py-1 rounded transition-all">REPRINT PDF</button>
+                    </div>
+                </div>
+            `).reverse().join('');
+        }
+
+        function downloadPDF(data) {
+            const doc = new jsPDF();
+            doc.setFillColor(10, 10, 20);
+            doc.rect(0, 0, 210, 297, 'F');
+            
+            doc.setTextColor(192, 38, 211);
+            doc.setFontSize(24);
+            doc.text("SHAKUNG GAMING HUB", 20, 30);
+            
+            doc.setDrawColor(192, 38, 211);
+            doc.line(20, 35, 190, 35);
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.text(`SESSION LOG: ${data.id}`, 20, 50);
+            doc.text(`GAMER: ${data.name}`, 20, 60);
+            doc.text(`UNIT: ${data.machine}`, 20, 70);
+            doc.text(`CASH: $${data.cash}`, 20, 80);
+            doc.text(`CHANGE GIVEN: ${data.changeStatus}`, 20, 90);
+            doc.text(`RESULTS: ${data.results}`, 20, 100);
+            doc.text(`TIMESTAMP: ${data.timestamp}`, 20, 110);
+
+            doc.save(`Shakung_${data.name}.pdf`);
+        }
+
+        function clearData() {
+            if(confirm("Wipe all logs from memory?")) {
+                localStorage.removeItem('shakungLogs');
+                renderData();
+            }
+        }
+    </script>
+</body>
+</html>
