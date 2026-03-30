@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shakung Hub | Daily Logging</title>
+    <title>Shakung Hub | ZAR Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
@@ -14,123 +14,132 @@
             background-color: #050505;
             color: #e2e8f0;
             font-family: 'Rajdhani', sans-serif;
-            background-image: 
-                linear-gradient(to bottom, rgba(20, 184, 166, 0.05), rgba(0, 0, 0, 0.9)),
-                url('https://www.transparenttextures.com/patterns/diagmonds-light.png');
+            background-image: radial-gradient(circle at top right, #134e4a, #050505);
         }
 
         .gaming-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid #14b8a6;
-            box-shadow: 0 0 15px rgba(20, 184, 166, 0.1);
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid #2dd4bf;
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.1);
         }
 
         .neon-text {
             font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 8px #14b8a6;
+            text-shadow: 0 0 10px #2dd4bf;
         }
 
         .input-field {
             background: #020617;
-            border: 1px solid #1e293b;
+            border: 1px solid #334155;
             color: white;
         }
 
         .input-field:focus {
-            border-color: #14b8a6;
+            border-color: #2dd4bf;
             outline: none;
+            box-shadow: 0 0 8px rgba(45, 212, 191, 0.3);
         }
 
         .btn-teal {
-            background: #14b8a6;
-            color: #000;
+            background: #0d9488;
+            color: white;
             font-weight: 800;
             transition: all 0.2s;
         }
 
         .btn-teal:hover {
-            background: #2dd4bf;
-            box-shadow: 0 0 15px #14b8a6;
-            transform: translateY(-1px);
+            background: #14b8a6;
+            box-shadow: 0 0 15px #2dd4bf;
         }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #134e4a; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen p-4 lg:p-10">
 
     <div class="max-w-6xl mx-auto">
-        <header class="mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <header class="mb-10 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-teal-900/30 pb-6">
             <div>
-                <h1 class="text-4xl font-black neon-text text-teal-400 uppercase tracking-tighter">Shakung Gaming Hub</h1>
-                <p class="text-teal-600 text-xs font-bold tracking-[0.4em]">Internal Session Logger</p>
+                <h1 class="text-4xl md:text-5xl font-black neon-text text-teal-400 uppercase italic">Shakung Gaming</h1>
+                <p class="text-teal-600 text-xs font-bold tracking-[0.5em] mt-1 text-center md:text-left">HUB LOGGING SYSTEM (ZAR)</p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="generateDailyReport()" class="bg-white/10 hover:bg-white/20 border border-teal-500/50 text-teal-400 px-4 py-2 rounded text-xs font-bold transition-all">
-                    PRINT DAILY RECORDS (.PDF)
+            <div class="flex gap-4">
+                <button onclick="generateDailyReport()" class="bg-teal-950/40 hover:bg-teal-900/60 border border-teal-500/50 text-teal-300 px-6 py-3 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
+                    <span>GENERATE DAILY REPORT (PDF)</span>
                 </button>
-                <button onclick="clearData()" class="border border-red-900 text-red-500 px-4 py-2 rounded text-xs font-bold hover:bg-red-900/20 transition-all">
-                    CLEAR DATA
+                <button onclick="clearData()" class="bg-red-950/20 border border-red-900/50 text-red-500 px-4 py-3 rounded-lg text-xs font-bold hover:bg-red-900 hover:text-white transition-all">
+                    WIPE DATA
                 </button>
             </div>
         </header>
 
         <div class="grid lg:grid-cols-12 gap-8">
-            <section class="lg:col-span-4 gaming-card p-6 rounded-lg">
-                <h2 class="text-lg font-bold text-teal-400 mb-6 border-b border-teal-900 pb-2 italic">ENTRY TERMINAL</h2>
-                <form id="gameForm" class="space-y-4">
+            <section class="lg:col-span-4 gaming-card p-8 rounded-2xl">
+                <h2 class="text-xl font-bold text-teal-400 mb-6 flex items-center gap-2">
+                    <span class="w-1 h-5 bg-teal-500"></span> NEW SESSION
+                </h2>
+                <form id="gameForm" class="space-y-5">
                     <div>
-                        <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Gamer Name</label>
-                        <input type="text" id="gamerName" required class="w-full p-2 rounded input-field font-bold uppercase tracking-tight">
+                        <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Gamer Name</label>
+                        <input type="text" id="gamerName" required class="w-full p-3 rounded-lg input-field font-bold uppercase tracking-wide">
                     </div>
                     
                     <div>
-                        <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Station</label>
-                        <select id="machine" class="w-full p-2 rounded input-field font-bold">
-                            <option>PS4 - Unit 01</option>
-                            <option>PS4 - Unit 02</option>
-                            <option>PS4 - Unit 03</option>
-                            <option>Arcade - Classic</option>
-                            <option>Arcade - Deluxe</option>
+                        <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Machine Unit</label>
+                        <select id="machine" class="w-full p-3 rounded-lg input-field font-bold">
+                            <optgroup label="PlayStation 4">
+                                <option>PS4 Station 1</option>
+                                <option>PS4 Station 2</option>
+                                <option>PS4 Station 3</option>
+                            </optgroup>
+                            <optgroup label="Arcade Machines">
+                                <option>Arcade Classic Cab</option>
+                                <option>Arcade Deluxe Cab</option>
+                            </optgroup>
                         </select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Cash In</label>
-                            <input type="number" id="cash" required class="w-full p-2 rounded input-field font-bold" placeholder="0.00">
+                            <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Cash In (R)</label>
+                            <input type="number" id="cash" required class="w-full p-3 rounded-lg input-field font-bold" placeholder="0.00">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Change?</label>
-                            <div class="flex gap-1">
+                            <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Change?</label>
+                            <div class="flex gap-2">
                                 <label class="flex-1">
                                     <input type="radio" name="changeStatus" value="Yes" checked class="hidden peer">
-                                    <div class="text-center py-2 border border-slate-800 rounded cursor-pointer peer-checked:bg-teal-600 peer-checked:text-black text-xs font-bold transition-all">YES</div>
+                                    <div class="text-center py-3 border border-slate-700 rounded-lg cursor-pointer peer-checked:bg-teal-500 peer-checked:text-black text-xs font-bold transition-all">YES</div>
                                 </label>
                                 <label class="flex-1">
                                     <input type="radio" name="changeStatus" value="No" class="hidden peer">
-                                    <div class="text-center py-2 border border-slate-800 rounded cursor-pointer peer-checked:bg-teal-600 peer-checked:text-black text-xs font-bold transition-all">NO</div>
+                                    <div class="text-center py-3 border border-slate-700 rounded-lg cursor-pointer peer-checked:bg-teal-500 peer-checked:text-black text-xs font-bold transition-all">NO</div>
                                 </label>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Game Results</label>
-                        <textarea id="results" rows="3" class="w-full p-2 rounded input-field text-sm italic" placeholder="Score, time, or win/loss notes..."></textarea>
+                        <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Final Results</label>
+                        <textarea id="results" rows="3" class="w-full p-3 rounded-lg input-field text-sm italic" placeholder="Match notes..."></textarea>
                     </div>
 
-                    <button type="submit" class="w-full btn-teal py-4 rounded uppercase tracking-widest text-sm mt-4">
-                        Save Session
+                    <button type="submit" class="w-full btn-teal py-4 rounded-xl uppercase tracking-[0.2em] text-sm mt-4">
+                        Commit to Database
                     </button>
                 </form>
             </section>
 
-            <section class="lg:col-span-8 gaming-card p-6 rounded-lg flex flex-col">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-bold text-teal-400 italic">LOG HISTORY</h2>
-                    <span id="logCounter" class="text-xs font-mono text-teal-600 bg-teal-900/20 px-3 py-1 rounded-full">0 LOGS RECORDED</span>
+            <section class="lg:col-span-8 gaming-card p-8 rounded-2xl flex flex-col">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xl font-bold text-teal-400 flex items-center gap-2">
+                        <span class="w-1 h-5 bg-teal-500"></span> SESSION RECORDS
+                    </h2>
+                    <span id="logCounter" class="text-[10px] font-mono text-teal-400 bg-teal-900/40 px-4 py-2 rounded-full border border-teal-500/30">0 SESSIONS LOGGED</span>
                 </div>
                 
-                <div id="displayArea" class="space-y-3 overflow-y-auto max-h-[550px] pr-2 custom-scrollbar">
+                <div id="displayArea" class="space-y-4 overflow-y-auto max-h-[500px] pr-4 custom-scrollbar">
                     </div>
             </section>
         </div>
@@ -152,7 +161,7 @@
                 machine: document.getElementById('machine').value,
                 cash: document.getElementById('cash').value,
                 changeStatus: document.querySelector('input[name="changeStatus"]:checked').value,
-                results: document.getElementById('results').value || "No results noted",
+                results: document.getElementById('results').value || "Completed Session",
                 timestamp: new Date().toLocaleString()
             };
 
@@ -166,82 +175,86 @@
 
         function renderData() {
             let logs = JSON.parse(localStorage.getItem('shakungLogs')) || [];
-            document.getElementById('logCounter').innerText = `${logs.length} LOGS RECORDED`;
+            document.getElementById('logCounter').innerText = `${logs.length} SESSIONS LOGGED`;
 
             if (logs.length === 0) {
-                displayArea.innerHTML = `<div class="text-center py-20 text-slate-700 font-bold uppercase tracking-widest border border-dashed border-slate-900 rounded">No data in current session</div>`;
+                displayArea.innerHTML = `<div class="text-center py-20 text-slate-700 font-bold uppercase tracking-widest border border-dashed border-slate-900 rounded-xl">NO ACTIVE RECORDS</div>`;
                 return;
             }
 
             displayArea.innerHTML = logs.map((log) => `
-                <div class="p-4 bg-black/40 border border-slate-800 rounded-md hover:border-teal-500/30 transition-all flex justify-between items-center group">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-4">
-                            <span class="text-teal-400 font-bold uppercase tracking-tight">${log.name}</span>
-                            <span class="text-[9px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">${log.machine}</span>
+                <div class="p-5 bg-slate-950/60 border border-slate-800 rounded-xl hover:border-teal-500/40 transition-all flex justify-between items-center group">
+                    <div>
+                        <div class="flex items-center gap-4 mb-2">
+                            <span class="text-teal-400 font-bold text-lg uppercase tracking-tighter">${log.name}</span>
+                            <span class="text-[10px] bg-teal-900/30 text-teal-200 px-3 py-1 rounded-full font-mono border border-teal-500/20">${log.machine}</span>
                         </div>
-                        <div class="text-xs text-slate-500 mt-1 flex gap-4">
-                            <span>Cash: $${log.cash}</span>
-                            <span>Change: <b class="${log.changeStatus === 'Yes' ? 'text-teal-500' : 'text-red-500'}">${log.changeStatus}</b></span>
-                            <span class="italic truncate max-w-[200px]">"${log.results}"</span>
+                        <div class="text-sm text-slate-400 flex gap-6 items-center">
+                            <span class="font-bold text-white">R ${parseFloat(log.cash).toFixed(2)}</span>
+                            <span class="text-xs">Change: <b class="${log.changeStatus === 'Yes' ? 'text-teal-500' : 'text-red-500'}">${log.changeStatus}</b></span>
+                            <span class="text-xs italic text-slate-500 border-l border-slate-800 pl-4 truncate max-w-[200px]">"${log.results}"</span>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-[9px] font-mono text-slate-600 mb-1">${log.timestamp}</p>
+                        <p class="text-[10px] font-mono text-slate-600">${log.timestamp}</p>
                     </div>
                 </div>
             `).reverse().join('');
         }
 
-        // Daily Report PDF Generation
         function generateDailyReport() {
             let logs = JSON.parse(localStorage.getItem('shakungLogs')) || [];
-            if (logs.length === 0) return alert("No records to print.");
+            if (logs.length === 0) return alert("Error: No data available for print.");
 
             const doc = new jsPDF();
             const dateStr = new Date().toLocaleDateString();
 
-            // Header Styling
-            doc.setFontSize(22);
-            doc.setTextColor(20, 184, 166);
-            doc.text("SHAKUNG GAMING HUB", 14, 20);
+            // Header Section
+            doc.setFillColor(15, 23, 42);
+            doc.rect(0, 0, 210, 45, 'F');
             
-            doc.setFontSize(12);
-            doc.setTextColor(100);
-            doc.text(`DAILY GAMING LOG REPORT - DATE: ${dateStr}`, 14, 30);
+            doc.setFontSize(24);
+            doc.setTextColor(45, 212, 191);
+            doc.text("SHAKUNG GAMING HUB", 14, 25);
             
-            // Table Construction
+            doc.setFontSize(10);
+            doc.setTextColor(148, 163, 184);
+            doc.text(`DAILY REVENUE & SESSION LOG (ZAR) | DATE: ${dateStr}`, 14, 35);
+            
+            // Table
             const tableData = logs.map(log => [
                 log.timestamp,
                 log.name.toUpperCase(),
                 log.machine,
-                `$${log.cash}`,
+                `R ${parseFloat(log.cash).toFixed(2)}`,
                 log.changeStatus,
                 log.results
             ]);
 
             doc.autoTable({
-                startY: 40,
-                head: [['Timestamp', 'Gamer', 'Station', 'Cash', 'Change', 'Results']],
+                startY: 50,
+                head: [['Time', 'Gamer', 'Station', 'Cash In', 'Change', 'Notes']],
                 body: tableData,
-                headStyles: { fillColor: [20, 184, 166], textColor: 255 },
-                styles: { fontSize: 9 },
-                alternateRowStyles: { fillColor: [240, 240, 240] }
+                headStyles: { fillColor: [13, 148, 136], textColor: 255, fontSize: 10 },
+                styles: { fontSize: 8, cellPadding: 4 },
+                alternateRowStyles: { fillColor: [248, 250, 252] }
             });
 
-            // Summary Info
+            // Summary Calc
             const totalCash = logs.reduce((sum, log) => sum + parseFloat(log.cash), 0);
-            const finalY = doc.lastAutoTable.finalY || 40;
-            doc.setFontSize(11);
-            doc.setTextColor(0);
-            doc.text(`Total Sessions: ${logs.length}`, 14, finalY + 15);
-            doc.text(`Total Cash Intake: $${totalCash.toFixed(2)}`, 14, finalY + 22);
+            const finalY = doc.lastAutoTable.finalY || 50;
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Total Sessions Logged: ${logs.length}`, 14, finalY + 15);
+            doc.text(`TOTAL REVENUE: R ${totalCash.toFixed(2)}`, 14, finalY + 22);
 
             doc.save(`Shakung_Daily_Report_${dateStr}.pdf`);
         }
 
         function clearData() {
-            if(confirm("Confirm: This will delete ALL history logs for today. Continue?")) {
+            if(confirm("Confirm: Wipe all records from the current terminal database?")) {
                 localStorage.removeItem('shakungLogs');
                 renderData();
             }
