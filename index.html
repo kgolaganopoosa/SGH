@@ -10,7 +10,7 @@
         body { font-family: 'Helvetica', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; border: 2px solid var(--border); padding: 20px; }
         h1 { text-transform: uppercase; letter-spacing: 2px; text-align: center; }
-        .form-group { margin-bottom: 15px; position: relative; }
+        .form-group { margin-bottom: 15px; }
         input, select { width: 100%; padding: 10px; border: 1px solid var(--border); box-sizing: border-box; }
         .currency-input { display: flex; align-items: center; border: 1px solid var(--border); }
         .currency-symbol { padding: 10px; background: #eee; border-right: 1px solid var(--border); }
@@ -70,7 +70,7 @@
     function addTransaction() {
         const entry = {
             name: document.getElementById('playerName').value,
-            amount: document.getElementById('amount').value,
+            amount: parseFloat(document.getElementById('amount').value) || 0,
             games: document.getElementById('games').value,
             console: document.getElementById('console').value,
             date: new Date().toLocaleString()
@@ -85,7 +85,7 @@
         body.innerHTML = transactions.map((t, index) => `
             <tr>
                 <td contenteditable="true" onblur="updateField(${index}, 'name', this.innerText)">${t.name}</td>
-                <td contenteditable="true" onblur="updateField(${index}, 'amount', this.innerText)">${t.amount}</td>
+                <td contenteditable="true" onblur="updateField(${index}, 'amount', this.innerText)">${parseFloat(t.amount).toFixed(2)}</td>
                 <td contenteditable="true" onblur="updateField(${index}, 'games', this.innerText)">${t.games}</td>
                 <td>${t.console}</td>
                 <td>${t.date}</td>
@@ -94,7 +94,11 @@
     }
 
     function updateField(index, field, value) {
-        transactions[index][field] = value;
+        if(field === 'amount') {
+            transactions[index][field] = parseFloat(value) || 0;
+        } else {
+            transactions[index][field] = value;
+        }
         localStorage.setItem('sgh_data', JSON.stringify(transactions));
     }
 
@@ -102,9 +106,9 @@
         const modal = document.getElementById('legalModal');
         const content = document.getElementById('legalContent');
         const policies = {
-            privacy: "<h2>Privacy Policy</h2><p>Your data is stored locally on your device using browser storage. We do not transmit or sell any data to third parties.</p>",
-            terms: "<h2>Terms of Use</h2><p>This tool is for personal record-keeping only. Use at your own risk.</p>",
-            conditions: "<h2>Terms & Conditions</h2><p>By using SGH Register, you acknowledge that data is saved locally and clearing your browser cache may result in data loss.</p>"
+            privacy: "<h2>Privacy Policy</h2><p>Your data is stored locally on your device. We do not access or transmit your data.</p>",
+            terms: "<h2>Terms of Use</h2><p>This is a record-keeping tool. Use responsibly.</p>",
+            conditions: "<h2>Terms & Conditions</h2><p>Data is stored in local browser storage. Clearing browser data will delete all logs.</p>"
         };
         content.innerHTML = policies[type];
         modal.style.display = 'block';
@@ -113,12 +117,23 @@
     function downloadPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        let total = 0;
+        
         doc.text("SGH Register Transaction Report", 10, 10);
+        
         let y = 20;
         transactions.forEach(t => {
-            doc.text(`${t.date} | ${t.name} | R${t.amount} | ${t.games} Games | ${t.console}`, 10, y);
+            const amt = parseFloat(t.amount) || 0;
+            total += amt;
+            doc.text(`${t.date} | ${t.name} | R${amt.toFixed(2)} | ${t.games} Games | ${t.console}`, 10, y);
             y += 10;
         });
+        
+        y += 10;
+        doc.text("-----------------------------------", 10, y);
+        y += 10;
+        doc.text(`TOTAL AMOUNT RECEIVED: R${total.toFixed(2)}`, 10, y);
+        
         doc.save("SGH_Register.pdf");
     }
 
