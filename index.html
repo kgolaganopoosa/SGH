@@ -3,262 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shakung Hub | ZAR Terminal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>SGH Register</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
-        
-        body {
-            background-color: #050505;
-            color: #e2e8f0;
-            font-family: 'Rajdhani', sans-serif;
-            background-image: radial-gradient(circle at top right, #134e4a, #050505);
-        }
-
-        .gaming-card {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid #2dd4bf;
-            box-shadow: 0 0 20px rgba(45, 212, 191, 0.1);
-        }
-
-        .neon-text {
-            font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 10px #2dd4bf;
-        }
-
-        .input-field {
-            background: #020617;
-            border: 1px solid #334155;
-            color: white;
-        }
-
-        .input-field:focus {
-            border-color: #2dd4bf;
-            outline: none;
-            box-shadow: 0 0 8px rgba(45, 212, 191, 0.3);
-        }
-
-        .btn-teal {
-            background: #0d9488;
-            color: white;
-            font-weight: 800;
-            transition: all 0.2s;
-        }
-
-        .btn-teal:hover {
-            background: #14b8a6;
-            box-shadow: 0 0 15px #2dd4bf;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #134e4a; border-radius: 10px; }
+        :root { --bg: #ffffff; --text: #000000; --border: #000000; }
+        body { font-family: 'Helvetica', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; border: 2px solid var(--border); padding: 20px; }
+        h1 { text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        .form-group { margin-bottom: 15px; position: relative; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); box-sizing: border-box; }
+        .currency-input { display: flex; align-items: center; border: 1px solid var(--border); }
+        .currency-symbol { padding: 10px; background: #eee; border-right: 1px solid var(--border); }
+        button { background: var(--text); color: var(--bg); border: none; padding: 10px 20px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        footer { margin-top: 40px; text-align: center; font-size: 0.75em; border-top: 1px solid #ccc; padding-top: 10px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; padding: 20px; overflow-y: auto; }
+        .close-btn { cursor: pointer; color: red; font-weight: bold; }
     </style>
 </head>
-<body class="min-h-screen p-4 lg:p-10">
+<body>
 
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-10 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-teal-900/30 pb-6">
-            <div>
-                <h1 class="text-4xl md:text-5xl font-black neon-text text-teal-400 uppercase italic">Shakung Gaming</h1>
-                <p class="text-teal-600 text-xs font-bold tracking-[0.5em] mt-1 text-center md:text-left">HUB LOGGING SYSTEM (ZAR)</p>
-            </div>
-            <div class="flex gap-4">
-                <button onclick="generateDailyReport()" class="bg-teal-950/40 hover:bg-teal-900/60 border border-teal-500/50 text-teal-300 px-6 py-3 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
-                    <span>GENERATE DAILY REPORT (PDF)</span>
-                </button>
-                <button onclick="clearData()" class="bg-red-950/20 border border-red-900/50 text-red-500 px-4 py-3 rounded-lg text-xs font-bold hover:bg-red-900 hover:text-white transition-all">
-                    WIPE DATA
-                </button>
-            </div>
-        </header>
-
-        <div class="grid lg:grid-cols-12 gap-8">
-            <section class="lg:col-span-4 gaming-card p-8 rounded-2xl">
-                <h2 class="text-xl font-bold text-teal-400 mb-6 flex items-center gap-2">
-                    <span class="w-1 h-5 bg-teal-500"></span> NEW SESSION
-                </h2>
-                <form id="gameForm" class="space-y-5">
-                    <div>
-                        <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Gamer Name</label>
-                        <input type="text" id="gamerName" required class="w-full p-3 rounded-lg input-field font-bold uppercase tracking-wide">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Machine Unit</label>
-                        <select id="machine" class="w-full p-3 rounded-lg input-field font-bold">
-                            <optgroup label="PlayStation 4">
-                                <option>PS4 Station 1</option>
-                                <option>PS4 Station 2</option>
-                                <option>PS4 Station 3</option>
-                            </optgroup>
-                            <optgroup label="Arcade Machines">
-                                <option>Arcade Classic Cab</option>
-                                <option>Arcade Deluxe Cab</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Cash In (R)</label>
-                            <input type="number" id="cash" required class="w-full p-3 rounded-lg input-field font-bold" placeholder="0.00">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Change?</label>
-                            <div class="flex gap-2">
-                                <label class="flex-1">
-                                    <input type="radio" name="changeStatus" value="Yes" checked class="hidden peer">
-                                    <div class="text-center py-3 border border-slate-700 rounded-lg cursor-pointer peer-checked:bg-teal-500 peer-checked:text-black text-xs font-bold transition-all">YES</div>
-                                </label>
-                                <label class="flex-1">
-                                    <input type="radio" name="changeStatus" value="No" class="hidden peer">
-                                    <div class="text-center py-3 border border-slate-700 rounded-lg cursor-pointer peer-checked:bg-teal-500 peer-checked:text-black text-xs font-bold transition-all">NO</div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] uppercase font-bold text-slate-500 mb-1">Final Results</label>
-                        <textarea id="results" rows="3" class="w-full p-3 rounded-lg input-field text-sm italic" placeholder="Match notes..."></textarea>
-                    </div>
-
-                    <button type="submit" class="w-full btn-teal py-4 rounded-xl uppercase tracking-[0.2em] text-sm mt-4">
-                        Commit to Database
-                    </button>
-                </form>
-            </section>
-
-            <section class="lg:col-span-8 gaming-card p-8 rounded-2xl flex flex-col">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-xl font-bold text-teal-400 flex items-center gap-2">
-                        <span class="w-1 h-5 bg-teal-500"></span> SESSION RECORDS
-                    </h2>
-                    <span id="logCounter" class="text-[10px] font-mono text-teal-400 bg-teal-900/40 px-4 py-2 rounded-full border border-teal-500/30">0 SESSIONS LOGGED</span>
-                </div>
-                
-                <div id="displayArea" class="space-y-4 overflow-y-auto max-h-[500px] pr-4 custom-scrollbar">
-                    </div>
-            </section>
+<div class="container">
+    <h1>SGH Register</h1>
+    
+    <div id="transactionForm">
+        <input type="text" id="playerName" placeholder="Player Name(s)" style="margin-bottom:10px;">
+        <div class="currency-input">
+            <span class="currency-symbol">R</span>
+            <input type="number" id="amount" placeholder="Amount Received" step="0.01">
         </div>
+        <input type="number" id="games" placeholder="Number of Games" style="margin-top:10px;">
+        <select id="console" style="margin-top:10px;">
+            <option value="Arcade">Arcade</option>
+            <option value="PS4">PS4</option>
+        </select>
+        <button onclick="addTransaction()">Register Transaction</button>
     </div>
 
-    <script>
+    <table id="logTable">
+        <thead>
+            <tr><th>Name</th><th>Amount (R)</th><th>Games</th><th>Console</th><th>Date</th></tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+    </table>
+
+    <button style="background: #555;" onclick="downloadPDF()">Download PDF</button>
+
+    <footer>
+        <p>
+            <span class="close-btn" onclick="showLegal('privacy')">Privacy Policy</span> | 
+            <span class="close-btn" onclick="showLegal('terms')">Terms of Use</span> | 
+            <span class="close-btn" onclick="showLegal('conditions')">Terms & Conditions</span>
+        </p>
+    </footer>
+</div>
+
+<div id="legalModal" class="modal">
+    <button onclick="document.getElementById('legalModal').style.display='none'">Close</button>
+    <div id="legalContent"></div>
+</div>
+
+<script>
+    let transactions = JSON.parse(localStorage.getItem('sgh_data')) || [];
+
+    function addTransaction() {
+        const entry = {
+            name: document.getElementById('playerName').value,
+            amount: document.getElementById('amount').value,
+            games: document.getElementById('games').value,
+            console: document.getElementById('console').value,
+            date: new Date().toLocaleString()
+        };
+        transactions.push(entry);
+        localStorage.setItem('sgh_data', JSON.stringify(transactions));
+        renderTable();
+    }
+
+    function renderTable() {
+        const body = document.getElementById('logBody');
+        body.innerHTML = transactions.map((t, index) => `
+            <tr>
+                <td contenteditable="true" onblur="updateField(${index}, 'name', this.innerText)">${t.name}</td>
+                <td contenteditable="true" onblur="updateField(${index}, 'amount', this.innerText)">${t.amount}</td>
+                <td contenteditable="true" onblur="updateField(${index}, 'games', this.innerText)">${t.games}</td>
+                <td>${t.console}</td>
+                <td>${t.date}</td>
+            </tr>
+        `).join('');
+    }
+
+    function updateField(index, field, value) {
+        transactions[index][field] = value;
+        localStorage.setItem('sgh_data', JSON.stringify(transactions));
+    }
+
+    function showLegal(type) {
+        const modal = document.getElementById('legalModal');
+        const content = document.getElementById('legalContent');
+        const policies = {
+            privacy: "<h2>Privacy Policy</h2><p>Your data is stored locally on your device using browser storage. We do not transmit or sell any data to third parties.</p>",
+            terms: "<h2>Terms of Use</h2><p>This tool is for personal record-keeping only. Use at your own risk.</p>",
+            conditions: "<h2>Terms & Conditions</h2><p>By using SGH Register, you acknowledge that data is saved locally and clearing your browser cache may result in data loss.</p>"
+        };
+        content.innerHTML = policies[type];
+        modal.style.display = 'block';
+    }
+
+    function downloadPDF() {
         const { jsPDF } = window.jspdf;
-        const form = document.getElementById('gameForm');
-        const displayArea = document.getElementById('displayArea');
-
-        document.addEventListener('DOMContentLoaded', renderData);
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const sessionData = {
-                id: Date.now(),
-                name: document.getElementById('gamerName').value,
-                machine: document.getElementById('machine').value,
-                cash: document.getElementById('cash').value,
-                changeStatus: document.querySelector('input[name="changeStatus"]:checked').value,
-                results: document.getElementById('results').value || "Completed Session",
-                timestamp: new Date().toLocaleString()
-            };
-
-            let logs = JSON.parse(localStorage.getItem('shakungLogs')) || [];
-            logs.push(sessionData);
-            localStorage.setItem('shakungLogs', JSON.stringify(logs));
-            
-            form.reset();
-            renderData();
+        const doc = new jsPDF();
+        doc.text("SGH Register Transaction Report", 10, 10);
+        let y = 20;
+        transactions.forEach(t => {
+            doc.text(`${t.date} | ${t.name} | R${t.amount} | ${t.games} Games | ${t.console}`, 10, y);
+            y += 10;
         });
+        doc.save("SGH_Register.pdf");
+    }
 
-        function renderData() {
-            let logs = JSON.parse(localStorage.getItem('shakungLogs')) || [];
-            document.getElementById('logCounter').innerText = `${logs.length} SESSIONS LOGGED`;
-
-            if (logs.length === 0) {
-                displayArea.innerHTML = `<div class="text-center py-20 text-slate-700 font-bold uppercase tracking-widest border border-dashed border-slate-900 rounded-xl">NO ACTIVE RECORDS</div>`;
-                return;
-            }
-
-            displayArea.innerHTML = logs.map((log) => `
-                <div class="p-5 bg-slate-950/60 border border-slate-800 rounded-xl hover:border-teal-500/40 transition-all flex justify-between items-center group">
-                    <div>
-                        <div class="flex items-center gap-4 mb-2">
-                            <span class="text-teal-400 font-bold text-lg uppercase tracking-tighter">${log.name}</span>
-                            <span class="text-[10px] bg-teal-900/30 text-teal-200 px-3 py-1 rounded-full font-mono border border-teal-500/20">${log.machine}</span>
-                        </div>
-                        <div class="text-sm text-slate-400 flex gap-6 items-center">
-                            <span class="font-bold text-white">R ${parseFloat(log.cash).toFixed(2)}</span>
-                            <span class="text-xs">Change: <b class="${log.changeStatus === 'Yes' ? 'text-teal-500' : 'text-red-500'}">${log.changeStatus}</b></span>
-                            <span class="text-xs italic text-slate-500 border-l border-slate-800 pl-4 truncate max-w-[200px]">"${log.results}"</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] font-mono text-slate-600">${log.timestamp}</p>
-                    </div>
-                </div>
-            `).reverse().join('');
-        }
-
-        function generateDailyReport() {
-            let logs = JSON.parse(localStorage.getItem('shakungLogs')) || [];
-            if (logs.length === 0) return alert("Error: No data available for print.");
-
-            const doc = new jsPDF();
-            const dateStr = new Date().toLocaleDateString();
-
-            // Header Section
-            doc.setFillColor(15, 23, 42);
-            doc.rect(0, 0, 210, 45, 'F');
-            
-            doc.setFontSize(24);
-            doc.setTextColor(45, 212, 191);
-            doc.text("SHAKUNG GAMING HUB", 14, 25);
-            
-            doc.setFontSize(10);
-            doc.setTextColor(148, 163, 184);
-            doc.text(`DAILY REVENUE & SESSION LOG (ZAR) | DATE: ${dateStr}`, 14, 35);
-            
-            // Table
-            const tableData = logs.map(log => [
-                log.timestamp,
-                log.name.toUpperCase(),
-                log.machine,
-                `R ${parseFloat(log.cash).toFixed(2)}`,
-                log.changeStatus,
-                log.results
-            ]);
-
-            doc.autoTable({
-                startY: 50,
-                head: [['Time', 'Gamer', 'Station', 'Cash In', 'Change', 'Notes']],
-                body: tableData,
-                headStyles: { fillColor: [13, 148, 136], textColor: 255, fontSize: 10 },
-                styles: { fontSize: 8, cellPadding: 4 },
-                alternateRowStyles: { fillColor: [248, 250, 252] }
-            });
-
-            // Summary Calc
-            const totalCash = logs.reduce((sum, log) => sum + parseFloat(log.cash), 0);
-            const finalY = doc.lastAutoTable.finalY || 50;
-            
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.setFont("helvetica", "bold");
-            doc.text(`Total Sessions Logged: ${logs.length}`, 14, finalY + 15);
-            doc.text(`TOTAL REVENUE: R ${totalCash.toFixed(2)}`, 14, finalY + 22);
-
-            doc.save(`Shakung_Daily_Report_${dateStr}.pdf`);
-        }
-
-        function clearData() {
-            if(confirm("Confirm: Wipe all records from the current terminal database?")) {
-                localStorage.removeItem('shakungLogs');
-                renderData();
-            }
-        }
-    </script>
+    renderTable();
+</script>
 </body>
 </html>
