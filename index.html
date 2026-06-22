@@ -10,6 +10,7 @@
         body { font-family: 'Helvetica', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; border: 2px solid var(--border); padding: 20px; }
         h1 { text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        #totalEarnings { text-align: center; font-size: 1.2em; font-weight: bold; margin-bottom: 20px; padding: 10px; background: #eee; border: 1px solid var(--border); }
         .form-group { margin-bottom: 15px; }
         input, select { width: 100%; padding: 10px; border: 1px solid var(--border); box-sizing: border-box; }
         .currency-input { display: flex; align-items: center; border: 1px solid var(--border); }
@@ -27,6 +28,8 @@
 <div class="container">
     <h1>SGH Register</h1>
     
+    <div id="totalEarnings">Total Earnings: R0.00</div>
+    
     <div id="transactionForm">
         <input type="text" id="playerName" placeholder="Player Name(s)" style="margin-bottom:10px;">
         <div class="currency-input">
@@ -37,6 +40,9 @@
         <select id="console" style="margin-top:10px;">
             <option value="Arcade">Arcade</option>
             <option value="PS4">PS4</option>
+            <option value="LUDO">LUDO</option>
+            <option value="UNO">UNO</option>
+            <option value="Jenga">Jenga</option>
         </select>
         <button onclick="addTransaction()">Register Transaction</button>
     </div>
@@ -82,6 +88,13 @@
 
     function renderTable() {
         const body = document.getElementById('logBody');
+        const totalDiv = document.getElementById('totalEarnings');
+        
+        // Calculate total
+        const total = transactions.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
+        totalDiv.innerText = `Total Earnings: R${total.toFixed(2)}`;
+
+        // Render rows
         body.innerHTML = transactions.map((t, index) => `
             <tr>
                 <td contenteditable="true" onblur="updateField(${index}, 'name', this.innerText)">${t.name}</td>
@@ -100,6 +113,7 @@
             transactions[index][field] = value;
         }
         localStorage.setItem('sgh_data', JSON.stringify(transactions));
+        renderTable(); // Re-render to update the total
     }
 
     function showLegal(type) {
